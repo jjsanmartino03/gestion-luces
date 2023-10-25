@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     login() {
-      alert('Hello!')
+      this.$router.push('/dashboard')
     }
   }
 }
