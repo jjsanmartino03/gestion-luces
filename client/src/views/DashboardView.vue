@@ -1,7 +1,7 @@
 <template>
   <div class='wrapper'>
     <header>
-      <h1>Gestión de Luces</h1>
+      <h1>{{ title }}</h1>
     </header>
     <main>
       <RouterView />
@@ -18,10 +18,11 @@
       </button>
 
     </nav>
+    <div class='menu-overlay' @click='toggleMenu' v-if='showMenu'>
+    </div>
     <transition name='slide-in'>
-      <div class='menu' v-if='showMenu' ref='menu' @touchstart='handleTouchStart' @touchmove='handleTouchMove'
+      <div v-if='showMenu' class='menu' ref='menu' @touchstart='handleTouchStart' @touchmove='handleTouchMove'
            @touchend='handleTouchEnd'>
-        <!-- Your menu items here -->
         <hr />
         <ul>
           <li>
@@ -31,7 +32,7 @@
             <RouterLink to='/aulas'>Crear aula</RouterLink>
           </li>
           <li>
-            <RouterLink to='/aulas'>Cerrar sesión</RouterLink>
+            <RouterLink to='/login'>Cerrar sesión</RouterLink>
           </li>
         </ul>
       </div>
@@ -42,8 +43,9 @@
 </template>
 
 <script>
-import { RouterLink, RouterView } from 'vue-router'
+import  { RouterLink, RouterView, useRoute } from 'vue-router'
 import CustomButton from '../components/CustomButton.vue'
+import { computed } from 'vue'
 
 export default {
   name: 'DashboardView',
@@ -81,6 +83,28 @@ export default {
         this.$refs.menu.style.transform = `translateY(0)`
       }
     }
+  },
+  setup() {
+    const route = useRoute()
+
+    const title = computed(() => {
+      switch (route.name) {
+        case 'stats':
+          return 'Estadísticas'
+        case 'home':
+          return 'Gestión de Luces'
+        case 'usuarios':
+          return 'Usuarios'
+        case 'aulas':
+          return 'Aulas'
+        default:
+          return 'Gestión de Luces'
+      }
+    })
+
+    return {
+      title
+    }
   }
 }
 </script>
@@ -103,11 +127,6 @@ header {
   background-color: #193250;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
 nav {
   font-size: 12px;
   margin-top: 2rem;
@@ -118,9 +137,9 @@ nav {
   width: 100%;
 }
 
-nav a {
-  width: 40px;
-  height: 40px;
+nav .nav-logo {
+  width: 50px;
+  height: 50px;
 }
 
 nav button {
@@ -133,8 +152,7 @@ nav button {
   transition: transform 0.5s;
 }
 
-.slide-in-enter-from, .slide-in-leave-to /* .slide-in-leave-active in <2.1.8 */
-{
+.slide-in-enter-from, .slide-in-leave-to {
   transform: translateY(100%);
 }
 
@@ -142,13 +160,25 @@ nav button {
   transform: translateY(0);
 }
 
-.menu {
+.menu-overlay {
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.66);
+  height: 100vh;
   position: fixed;
+
   bottom: 0;
   width: 100%;
   max-width: 768px;
+}
+
+.menu {
+  z-index: 2;
+  bottom: 0;
+  width: 100%;
+  max-width: 768px;
+  position: fixed;
   background-color: #fff;
-  padding: 1rem 3rem 4rem;
+  padding: 1rem 2rem 4rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -175,5 +205,10 @@ nav button {
   list-style-type: none;
   margin: 0;
 
+}
+
+
+.menu li a{
+  color: inherit;
 }
 </style>
