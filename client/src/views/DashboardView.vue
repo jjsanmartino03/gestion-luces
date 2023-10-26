@@ -16,25 +16,39 @@
       <button class='nav-link' @click='toggleMenu'>
         <img class='nav-logo' alt='Logo de un foco' src='/menu_icon.png' />
       </button>
-      <transition name='slide-in'>
-        <menu v-if='showMenu' ref='menu' @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
-          <!-- Your menu items here -->
-          <div>Menu Item 1</div>
-          <div>Menu Item 2</div>
-          <div>Menu Item 3</div>
-        </menu>
-      </transition>
+
     </nav>
+    <transition name='slide-in'>
+      <div class='menu' v-if='showMenu' ref='menu' @touchstart='handleTouchStart' @touchmove='handleTouchMove'
+           @touchend='handleTouchEnd'>
+        <!-- Your menu items here -->
+        <hr />
+        <ul>
+          <li>
+            <RouterLink to='/usuarios'>Usuarios</RouterLink>
+          </li>
+          <li>
+            <RouterLink to='/aulas'>Crear aula</RouterLink>
+          </li>
+          <li>
+            <RouterLink to='/aulas'>Cerrar sesión</RouterLink>
+          </li>
+        </ul>
+      </div>
+
+    </transition>
   </div>
 
 </template>
 
 <script>
 import { RouterLink, RouterView } from 'vue-router'
+import CustomButton from '../components/CustomButton.vue'
 
 export default {
   name: 'DashboardView',
   components: {
+    CustomButton,
     RouterLink,
     RouterView
   },
@@ -43,28 +57,28 @@ export default {
       showMenu: false,
       startY: 0,  // Initial touch Y coordinate
       currentY: 0 // Current touch Y coordinate
-    };
+    }
   },
   methods: {
     toggleMenu() {
       this.showMenu = !this.showMenu
     },
     handleTouchStart(event) {
-      this.startY = event.touches[0].clientY;
+      this.startY = event.touches[0].clientY
     },
     handleTouchMove(event) {
-      const touchY = event.touches[0].clientY;
-      const diffY = touchY - this.startY;
+      const touchY = event.touches[0].clientY
+      const diffY = touchY - this.startY
 
       if (diffY > 0) { // Swipe Down
-        this.$refs.menu.style.transform = `translateY(${diffY}px)`;
+        this.$refs.menu.style.transform = `translateY(${diffY}px)`
       }
     },
     handleTouchEnd() {
-      if (this.startY - this.currentY > 50  ) { // Adjust this value as needed
-        this.showMenu = false;
+      if (this.startY - this.currentY > 50) { // Adjust this value as needed
+        this.showMenu = false
       } else {
-        this.$refs.menu.style.transform = `translateY(0)`;
+        this.$refs.menu.style.transform = `translateY(0)`
       }
     }
   }
@@ -104,7 +118,7 @@ nav {
   width: 100%;
 }
 
-nav a img {
+nav a {
   width: 40px;
   height: 40px;
 }
@@ -118,23 +132,48 @@ nav button {
 .slide-in-enter-active, .slide-in-leave-active {
   transition: transform 0.5s;
 }
-.slide-in-enter-from, .slide-in-leave-to /* .slide-in-leave-active in <2.1.8 */ {
+
+.slide-in-enter-from, .slide-in-leave-to /* .slide-in-leave-active in <2.1.8 */
+{
   transform: translateY(100%);
 }
+
 .slide-in-enter-to, .slide-in-leave-from {
   transform: translateY(0);
 }
 
-menu {
+.menu {
   position: fixed;
-  left: 0;
+  bottom: 0;
   width: 100%;
+  max-width: 768px;
   background-color: #fff;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px;
+  padding: 1rem 3rem 4rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   transition: transform 0.3s;
+  gap: 1rem;
+}
+
+.menu hr {
+  width: 6rem;
+  border: 3px solid #b8bdbb;
+  border-radius: 99999px;
+  align-self: center;
+}
+
+.menu ul {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.menu li {
+  font-size: 1.5rem;
+  list-style-type: none;
+  margin: 0;
+
 }
 </style>

@@ -19,7 +19,7 @@ const options = {
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('../views/DashboardView.vue'),
+      component: () => import('@/views/DashboardView.vue'),
       children: [
         {
           path: '', // Default child route.
@@ -30,6 +30,16 @@ const options = {
           path: '/stats', // Default child route.
           name: 'stats',
           component: () => import('@/views/dashboard/Stats.vue')
+        },
+        {
+          path: '/aulas', // Default child route.
+          name: 'aulas',
+          component: () => import('@/views/dashboard/Aulas.vue')
+        },
+        {
+          path: '/usuarios', // Default child route.
+          name: 'usuarios',
+          component: () => import('@/views/dashboard/Usuarios.vue')
         }
       ]
 
