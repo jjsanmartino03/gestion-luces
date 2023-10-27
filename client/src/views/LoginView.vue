@@ -1,6 +1,18 @@
 <script setup>
 import Input from '../components/CustomInput.vue'
 import CustomButton from '../components/CustomButton.vue'
+import { useAuthStore } from '../stores/auth'
+import { ref } from 'vue'
+
+const authStore = useAuthStore()
+
+const username = ref('')
+const password = ref('')
+
+function login(e) {
+  e.preventDefault()
+  authStore.login(username.value, password.value)
+}
 </script>
 
 <template>
@@ -8,11 +20,13 @@ import CustomButton from '../components/CustomButton.vue'
     <div class='login-card'>
       <form @submit='login'>
         <h1>Ingresar</h1>
-        <Input input-id='username' label='Nombre de Usuario' v-model='username'
-               placeholder='Ingresa tu nombre de usuario' />
-        <Input placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
-               type='password' />
-        <CustomButton type='submit' theme='light' variant='primary'>Iniciar sesión</CustomButton>
+        <div class='inputs-container'>
+          <Input input-id='username' label='Nombre de Usuario' v-model='username'
+                 placeholder='Ingresa tu nombre de usuario' />
+          <Input placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
+                 type='password' />
+        </div>
+        <CustomButton type='submit' theme='light' variant='primary'>Continuar</CustomButton>
       </form>
     </div>
   </main>
@@ -27,15 +41,33 @@ main {
   height: 100vh;
 }
 
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem 1rem;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
 form {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 500px;
+
+
   height: 100%;
-  gap: 2rem;
+  gap: 3rem;
   align-items: center;
   justify-content: space-between;
+}
+
+form input {
+  width: 100%;
+}
+
+label {
+  text-align: center;
 }
 
 .login-card {
@@ -50,27 +82,14 @@ input {
   border-bottom: 1px solid gray;
 }
 
-</style>
-
-<script>
-import Input from '../components/CustomInput.vue'
-
-export default {
-  name: 'LoginView',
-  components: {
-    Input
-  },
-  data() {
-    return {
-      username: '',
-      password: ''
-    }
-  },
-  methods: {
-    login(e) {
-      e.preventDefault()
-      this.$router.push('/dashboard')
-    }
-  }
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 }
-</script>
+
+form button {
+  font-size: 1.5rem;
+}
+</style>
