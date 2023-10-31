@@ -39,17 +39,23 @@ class RegistroDatosArduino (viewsets.ViewSet):
     def create(self, request):
         ip = request.META.get('REMOTE_ADDR') #obtiene la ip del cliente cuando llama a la ruta 
         estado = request.data.get('estado')
-        ultimo_registro = RegistrosLuces.objects.filter(sensor__aula__ip=ip).first()
-        if int(ultimo_registro.estado) == estado:
-            ultimo_registro.hasta = datetime.datetime.now() 
-            ultimo_registro.save()
-        else:
-            nuevo_registro = RegistrosLuces.object.create(
+
+        last_signal = Aulas.objects.filter(ip = ip).first() #obtiene el aula con su ultima señal
+        last_signal.last_signal_date = datetime.datetime.now() #actualiza la ultima señal del aula
+        last_signal.save()
+
+        ultimo_registro = RegistrosLuces.objects.filter(sensor__aula__ip=ip, hasta=None).first() #obtiene el ultimo registro del sensor con la ip del sensor
+
+        if int(ultimo_registro.estado) != estado: #si el estado no es el mismo
+            nuevo_registro = RegistrosLuces.objects.create( #se crea un nuevo campo con el nuevo estado
                 sensor = ultimo_registro.sensor,
                 desde = datetime.datetime.now(),
-                hasta = datetime.datetime.now(),
                 estado = estado
             )
+
+            ultimo_registro.hasta = datetime.datetime.now() #se actualiza la fecha hasta del estado anterior
+            ultimo_registro.save()
+        
         return Response({})
 
 #Routers

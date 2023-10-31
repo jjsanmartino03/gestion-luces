@@ -29,7 +29,7 @@ class Interacciones(models.Model):
 class RegistrosLuces(models.Model):
     sensor = models.ForeignKey(Sensores, on_delete=models.CASCADE)
     desde = models.DateTimeField()
-    hasta = models.DateTimeField()
+    hasta = models.DateTimeField(null = True)
     estado = models.BooleanField()
 
 
