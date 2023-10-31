@@ -1,12 +1,13 @@
 <template>
-  <div class="input-container">
-    <label v-if="label" :for="inputId">{{ label }}</label>
+  <div class='input-container'>
+    <label v-if='label' :for='inputId'>{{ label }}</label>
     <input
-        :id="inputId"
-        :type="type"
-        :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
-        :placeholder="placeholder"
+      :id='inputId'
+      :type='type'
+      :value='modelValue'
+      :required='required'
+      @input="$emit('update:modelValue', $event.target.value)"
+      :placeholder='placeholder'
     />
   </div>
 </template>
@@ -15,6 +16,10 @@
 export default {
   name: 'Input',
   props: {
+    required: {
+      type: Boolean,
+      default: false
+    },
     label: {
       type: String,
       default: ''
@@ -37,7 +42,7 @@ export default {
     }
   },
   emits: ['update:modelValue']
-};
+}
 </script>
 
 <style scoped>

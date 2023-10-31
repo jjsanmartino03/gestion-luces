@@ -3,15 +3,26 @@ import Input from '../components/CustomInput.vue'
 import CustomButton from '../components/CustomButton.vue'
 import { useAuthStore } from '../stores/auth'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 
 const username = ref('')
 const password = ref('')
+const router = useRouter()
 
-function login(e) {
+
+if (authStore.isAuthenticated) {
+  router.push('/dashboard')
+}
+
+async function login(e) {
   e.preventDefault()
-  authStore.login(username.value, password.value)
+  const result = await authStore.login(username.value, password.value)
+
+  if (result) {
+    router.push('/dashboard')
+  }
 }
 </script>
 
@@ -21,12 +32,13 @@ function login(e) {
       <form @submit='login'>
         <h1>Ingresar</h1>
         <div class='inputs-container'>
-          <Input input-id='username' label='Nombre de Usuario' v-model='username'
+          <Input required input-id='username' label='Nombre de Usuario' v-model='username'
                  placeholder='Ingresa tu nombre de usuario' />
-          <Input placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
+          <Input required placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
                  type='password' />
         </div>
-        <CustomButton type='submit' theme='light' variant='primary'>Continuar</CustomButton>
+        <CustomButton type='submit' theme='primary' variant='solid'>
+          Continuar</CustomButton>
       </form>
     </div>
   </main>
