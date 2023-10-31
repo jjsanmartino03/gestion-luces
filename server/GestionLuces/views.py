@@ -6,6 +6,7 @@ from GestionLuces.models import Aulas, Sensores
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAdminUser
 
 # Create your views here.
 
@@ -35,21 +36,21 @@ class UsuariosSerializer(serializers.HyperlinkedModelSerializer):
 #ViewSets
 class AulasViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     queryset = Aulas.objects.all()
     serializer_class = AulasSerializer
 
 class SensoresViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     queryset = Sensores.objects.all()
     serializer_class = SensoresSerializer
 
 class UsuariosViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     queryset = User.objects.all()
     serializer_class = UsuariosSerializer
