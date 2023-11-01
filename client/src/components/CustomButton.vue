@@ -18,7 +18,7 @@ export default {
     },
     theme: {
       type: String,
-      default: 'primary' // possible values: 'primary', 'secondary'
+      default: 'primary' // possible values: 'primary', 'secondary', 'gray'
     },
     variant: {
       type: String,
@@ -63,12 +63,22 @@ export default {
   color: white;
 }
 
+.secondary.solid {
+  background-color: #c1ff72;
+  color: var(--color-text);
+}
+
+.gray.solid{
+  background-color: #828589;
+  color: white;
+}
+
 .primary.link {
   background-color: transparent;
   color: #386aa4;
 }
 
-.primary.link:hover,.primary.link:active{
+.primary.link:hover, .primary.link:active {
   text-decoration: underline;
   text-underline: #386aa4;
 }

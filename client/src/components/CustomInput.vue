@@ -57,9 +57,11 @@ label {
 }
 
 input {
+  background-color: #b2b2b2;
+  color: white;
   padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: .5rem;
   font-size: 1rem;
 }
 </style>
