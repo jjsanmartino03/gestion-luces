@@ -6,13 +6,13 @@ import CustomButton from '../components/CustomButton.vue'
 <template>
   <main>
     <div class='login-card'>
-      <form>
+      <form @submit='login'>
         <h1>Ingresar</h1>
         <Input input-id='username' label='Nombre de Usuario' v-model='username'
                placeholder='Ingresa tu nombre de usuario' />
         <Input placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
                type='password' />
-        <CustomButton theme='light' variant='primary' @click='login'>Iniciar sesión</CustomButton>
+        <CustomButton type='submit' theme='light' variant='primary'>Iniciar sesión</CustomButton>
       </form>
     </div>
   </main>
@@ -67,8 +67,9 @@ export default {
     }
   },
   methods: {
-    login() {
-      alert('Hello!')
+    login(e) {
+      e.preventDefault()
+      this.$router.push('/dashboard')
     }
   }
 }

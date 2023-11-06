@@ -1,9 +1,19 @@
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from rest_framework import routers, serializers, viewsets
 from django.urls import path, include
+<<<<<<< HEAD
 from GestionLuces.models import Aulas, Sensores, RegistrosLuces
 from rest_framework.response import Response
 import datetime
+=======
+from GestionLuces.models import Aulas, Sensores
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAdminUser
+
+>>>>>>> e179e85e8fcce7d089e015042ed4418ef97b8048
 # Create your views here.
 
 # Serializers
@@ -17,21 +27,34 @@ class SensoresSerializer(serializers.HyperlinkedModelSerializer):
         model = Sensores
         fields = ['id', 'aula', 'last_signal_late', 'tipo', 'ip']
 
+class UsuariosSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'password', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        validated_data['password'] = make_password(password)
+        user = User(**validated_data)
+        user.save()
+        return user
+
 #ViewSets
 class AulasViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     queryset = Aulas.objects.all()
     serializer_class = AulasSerializer
 
 class SensoresViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     queryset = Sensores.objects.all()
     serializer_class = SensoresSerializer
 
+<<<<<<< HEAD
 class RegistroDatosArduino (viewsets.ViewSet):
     authentication_classes = []
     permission_classes = []
@@ -57,9 +80,21 @@ class RegistroDatosArduino (viewsets.ViewSet):
             ultimo_registro.save()
         
         return Response({})
+=======
+class UsuariosViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    queryset = User.objects.all()
+    serializer_class = UsuariosSerializer
+>>>>>>> e179e85e8fcce7d089e015042ed4418ef97b8048
 
 #Routers
 router = routers.DefaultRouter()
 router.register(r'aulas', AulasViewSet)
 router.register(r'sensores', SensoresViewSet)
+<<<<<<< HEAD
 router.register(r'registro_sensores', RegistroDatosArduino, basename='sensores')
+=======
+router.register(r'usuarios', UsuariosViewSet)
+>>>>>>> e179e85e8fcce7d089e015042ed4418ef97b8048

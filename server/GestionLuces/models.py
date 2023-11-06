@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
-class Usuarios(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
-
 class Aulas(models.Model):
     numero = models.IntegerField()
     ip = models.CharField(max_length=30, unique=True)
@@ -18,11 +15,22 @@ class Sensores(models.Model):
     tipo = models.CharField(max_length=30, choices=Tipo.choices)
 
 class Interacciones(models.Model):
+<<<<<<< HEAD
     class Tipo(models.TextChoices):
         ENCENDIDO = 'encendido', 'encendido'
         APAGADO = 'apagado', 'apagado'
     tipo = models.CharField(max_length=30, choices=Tipo.choices)
     usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
+=======
+    ENCENDIDO = 'encendido'
+    APAGADO = 'apagado'
+    TIPO_CHOICES = (
+        (ENCENDIDO, 'encendido'),
+        (APAGADO, 'apagado'),
+    )
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+>>>>>>> e179e85e8fcce7d089e015042ed4418ef97b8048
     sensor = models.ForeignKey(Sensores, on_delete=models.CASCADE)
     fecha = models.DateTimeField()
 
