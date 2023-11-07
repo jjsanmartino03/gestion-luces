@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', {
     async login(username, password) {
 
       try {
-        const response = await api.post('api-token-auth/', { username, password })
+        const response = await api.post('login/', { username, password })
 
         this.token = response.data.token
         localStorage.setItem('token', response.data.token)
