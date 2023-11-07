@@ -1,26 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
 class Aulas(models.Model):
     numero = models.IntegerField()
-
-class TipoSensores(models.Model):
-    nombre = models.CharField(max_length=30)
+    ip = models.CharField(max_length=30, unique=True)
+    last_signal_date = models.DateTimeField(default=datetime.datetime.now())
 
 class Sensores(models.Model):
+    class Tipo(models.TextChoices):
+        FOTOSENSIBLE = 'fotosensible', 'fotosensible'
+        RELE = 'rele', 'rele'
     aula = models.ForeignKey(Aulas, on_delete=models.CASCADE)
-    last_signal_late = models.DateTimeField()
-    tipo = models.ForeignKey(TipoSensores, on_delete=models.CASCADE)
-    ip = models.CharField(max_length=30, unique=True)
+    tipo = models.CharField(max_length=30, choices=Tipo.choices)
 
 class Interacciones(models.Model):
-    ENCENDIDO = 'encendido'
-    APAGADO = 'apagado'
-    TIPO_CHOICES = (
-        (ENCENDIDO, 'encendido'),
-        (APAGADO, 'apagado'),
-    )
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    class Tipo(models.TextChoices):
+        ENCENDIDO = 'encendido', 'encendido'
+        APAGADO = 'apagado', 'apagado'
+    tipo = models.CharField(max_length=30, choices=Tipo.choices)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     sensor = models.ForeignKey(Sensores, on_delete=models.CASCADE)
     fecha = models.DateTimeField()
@@ -28,7 +26,7 @@ class Interacciones(models.Model):
 class RegistrosLuces(models.Model):
     sensor = models.ForeignKey(Sensores, on_delete=models.CASCADE)
     desde = models.DateTimeField()
-    hasta = models.DateTimeField()
+    hasta = models.DateTimeField(null = True)
     estado = models.BooleanField()
 
 
