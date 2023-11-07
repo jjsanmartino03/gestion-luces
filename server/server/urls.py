@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from GestionLuces.views import router
+from GestionLuces.views import router, GetAuthenticatedUser
 from rest_framework.authtoken import views
 
 urlpatterns = [
