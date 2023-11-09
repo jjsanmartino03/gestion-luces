@@ -2,7 +2,7 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from rest_framework import routers, serializers, viewsets, status
 from django.urls import path, include
-from GestionLuces.models import Aulas, Sensores, RegistrosLuces
+from GestionLuces.models import Aulas, Sensores, RegistrosLuces, Interacciones
 from rest_framework.response import Response
 import datetime
 from django.contrib.auth.models import User
@@ -10,18 +10,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 
+
+
 # Create your views here.
 
 # Serializers
 class AulasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta: 
         model = Aulas
-        fields = ['id', 'numero']
+        fields = ['id', 'numero', 'last_signal_date', 'ip']
 
 class SensoresSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Sensores
-        fields = ['id', 'aula', 'last_signal_late', 'tipo', 'ip']
+        fields = ['id', 'aula', 'tipo']
 
 class UsuariosSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -95,23 +97,51 @@ class GetAuthenticatedUser(viewsets.ViewSet):
         }
         return Response(data)
 
-class Interacciones(viewsets.ViewSet):
+class InteraccionesView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
-        id_usuario = request.user.id
-        fecha = datetime.datetime.now()
         if request.method == 'POST':
             id_aula = request.POST.get('id_aula')
             try:
-                aula = Aulas.objects.get(id_aula)
-                sensor = Sensores.objects.filter(aula=id_aula).filter(tipo='RELE')
+                aula = Aulas.objects.get(id=id_aula)
+                sensor = Sensores.objects.get(aula=id_aula, tipo=Sensores.Tipo.RELE)
+                id_sensor = sensor.id
+                ultimoRegistro = RegistrosLuces.objects.filter(sensor=id_sensor).last()
+                if ultimoRegistro is not None:
+                    estado = ultimoRegistro.estado
+                    if estado == 1:
+                        tipo = Interacciones.Tipo.APAGADO
+                    else:
+                        tipo = Interacciones.Tipo.ENCENDIDO
+                else:
+                    tipo = Interacciones.Tipo.APAGADO
+                interaccion = Interacciones.objects.create(
+                    usuario=request.user,
+                    fecha=datetime.datetime.now(),
+                    tipo=tipo,
+                    sensor=sensor
+                )
+                return Response('Accion realizada correctamente.', status=status.HTTP_201_CREATED)
             except Aulas.DoesNotExist:
                 return Response('No se encontro una aula con ese ID.', status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
-        pass
+        aulas = Aulas.objects.all()
+        datos_aulas = []
+        for aula in aulas:
+            sensor = Sensores.objects.get(aula=aula.id, tipo=Sensores.Tipo.RELE)
+            ultimoRegistro = RegistrosLuces.objects.filter(sensor=sensor.id).last()
+            datos_aula = {
+                'aula_id': aula.id,
+                'aula_numero': aula.numero,
+                'has_rele': True if sensor else False,
+                'estado': ultimoRegistro.estado if ultimoRegistro else False,
+                'desde': ultimoRegistro.desde if ultimoRegistro else False,
+            }
+            datos_aulas.append(datos_aula)
+        return Response(datos_aulas)
 
 
 
@@ -123,3 +153,4 @@ router.register(r'sensores', SensoresViewSet)
 router.register(r'registro_sensores', RegistroDatosArduino, basename='sensores')
 router.register(r'usuarios', UsuariosViewSet)
 router.register(r'user', GetAuthenticatedUser, basename='user')
+router.register(r'interacciones', InteraccionesView, basename='interacciones')
