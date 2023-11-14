@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth.hashers import make_password
 from rest_framework import routers, serializers, viewsets, status
 from GestionLuces.models import Aulas, Sensores, RegistrosLuces, Interacciones
@@ -7,7 +9,7 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
-from requests import post
+from requests import post, get
 
 
 # Serializers
@@ -112,10 +114,12 @@ class InteraccionesView(viewsets.ViewSet):
 
         id_aula = request.data.get('id_aula')
         try:
+            estado = 0
             aula = Aulas.objects.get(id=id_aula)
-            sensor = Sensores.objects.get(aula=id_aula, tipo=Sensores.Tipo.RELE)
-            id_sensor = sensor.id
-            ultimoRegistro = RegistrosLuces.objects.filter(sensor=id_sensor).last()
+            sensor_rele = Sensores.objects.get(aula=id_aula, tipo=Sensores.Tipo.RELE)
+            sensor_fotosensible = Sensores.objects.get(aula=id_aula, tipo=Sensores.Tipo.FOTOSENSIBLE)
+            id_sensor = sensor_rele.id
+            ultimoRegistro = RegistrosLuces.objects.filter(sensor=sensor_fotosensible.id).last()
             if ultimoRegistro is not None:
                 estado = ultimoRegistro.estado
                 if estado == 1:
@@ -128,21 +132,40 @@ class InteraccionesView(viewsets.ViewSet):
                 usuario=request.user,
                 fecha=datetime.datetime.now(),
                 tipo=tipo,
-                sensor=sensor
+                sensor=sensor_rele
             )
 
-            # response = post(f'http://{aula.ip}/toggle')
-            #
+            # response = get(f'http://{aula.ip}/hola')
+            # print(response.status_code)
             # if response.status_code != 200:
             #     raise Exception('Error al llamar a la API del arduino.', [
             #         response.status_code,
             #         response.text
-            #     ])
+            #     ])}
 
-            # El arduino nos tendría que decir si se encendió o apagó la luz, y nosotros actualizarlo
-            # en la base de datos.
+            arduino_status = (0 if estado else 1)    #int(response.text)
 
-            return Response('Accion realizada correctamente.', status=status.HTTP_201_CREATED)
+            # según lo que nos dice el arduino, actualizamos el estado de la luz
+            if ultimoRegistro and arduino_status == 0 and ultimoRegistro.estado == 1:
+                nuevo_registro = RegistrosLuces.objects.create(
+                    sensor=sensor_fotosensible,
+                    desde=datetime.datetime.now(),
+                    estado=0
+                )
+                ultimoRegistro.hasta = datetime.datetime.now()
+                ultimoRegistro.save()
+            elif ultimoRegistro and arduino_status == 1 and ultimoRegistro.estado == 0:
+                ultimoRegistro.hasta = datetime.datetime.now()
+                ultimoRegistro.save()
+                nuevo_registro = RegistrosLuces.objects.create(
+                    sensor=sensor_fotosensible,
+                    desde=datetime.datetime.now(),
+                    estado=1
+                )
+
+            return Response({
+                'estado': arduino_status,
+            }, status=status.HTTP_201_CREATED)
         except Aulas.DoesNotExist:
             return Response('No se encontro una aula con ese ID.', status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

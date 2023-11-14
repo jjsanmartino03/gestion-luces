@@ -38,7 +38,7 @@ export const useHomeStore = defineStore('home', {
           if (a.id === id) {
             return {
               ...a,
-              estado: !a.estado
+              estado: !!response.data.estado
             }
           }
           return a
