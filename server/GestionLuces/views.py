@@ -98,18 +98,24 @@ class EstadisticasSemanales (viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
 
-    def calcularConsumoDiario(self, fecha):
+    def calcular_consumo_diario(self, fecha):
         tiempo_total = timedelta()
         registros = RegistrosLuces.objects.filter(
             desde__date=fecha,
             estado=1
         )
+
         for registro in registros:
             hasta = registro.hasta
-            if not hasta: 
-                hasta = datetime.now()
 
-            tiempo_total += hasta - registro.desde
+            if not hasta:
+                hasta = datetime.now()
+            else:
+                hasta = datetime.fromtimestamp(registro.hasta.timestamp())
+
+            desde = datetime.fromtimestamp(registro.desde.timestamp())
+
+            tiempo_total += hasta - desde
         return tiempo_total
 
 
@@ -119,7 +125,7 @@ class EstadisticasSemanales (viewsets.ViewSet):
         lista = []
         for i in range(7):
             nueva_fecha = fecha_domingo + timedelta(days=i)
-            registro_diario = self.calcularConsumoDiario(nueva_fecha)
+            registro_diario = self.calcular_consumo_diario(nueva_fecha)
             lista.append(round(registro_diario.total_seconds()/3600, 4))
 
         return Response(lista)
