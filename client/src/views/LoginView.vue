@@ -38,7 +38,8 @@ async function login(e) {
                  type='password' />
         </div>
         <CustomButton type='submit' theme='primary' variant='solid'>
-          Continuar</CustomButton>
+          Continuar
+        </CustomButton>
       </form>
     </div>
   </main>
@@ -47,6 +48,8 @@ async function login(e) {
 <style scoped>
 main {
   width: 100%;
+  max-width: 768px;
+  background-color: #eaeaea;
   display: flex;
   justify-content: center;
   align-items: center;

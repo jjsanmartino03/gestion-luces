@@ -23,6 +23,11 @@ export default {
     variant: {
       type: String,
       default: 'solid' // possible values: 'solid', 'link'
+    },
+    onclick: {
+      type: Function,
+      default: () => {
+      }
     }
   },
   computed: {
@@ -32,8 +37,10 @@ export default {
     }
   },
   methods: {
-    handleClick() {
-      this.$emit('click')
+    handleClick(e) {
+      if (!this.disabled) {
+        this.onclick(e)
+      }
     }
   }
 }
@@ -68,7 +75,7 @@ export default {
   color: var(--color-text);
 }
 
-.gray.solid{
+.gray.solid {
   background-color: #828589;
   color: white;
 }

@@ -1,24 +1,31 @@
 <script setup>
 import CustomButton from '../../components/CustomButton.vue'
 import Input from '../../components/CustomInput.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useHomeStore } from '../../stores/home'
 
 const searchText = ref('')
 const homeStore = useHomeStore()
 
+let interval
+
 onMounted(() => {
   homeStore.getAulas()
+  interval = setInterval(() => {
+    homeStore.getAulas()
+  }, 15000)
 })
 
-function turnOn(aulaId) {
-  alert('Encender ' + aulaId)
-}
+onUnmounted(() => {
+  clearInterval(interval)
+})
 
-function turnOff(aulaId) {
-  alert('Apagar ' + aulaId)
-}
+const getDateDiff = (date) => {
+  const minutes = ((new Date() - new Date(date)) / 1000 / 60) % 60
+  const hours = ((new Date() - new Date(date)) / 1000 / 60 / 60) % 24
 
+  return `Hace ${Math.floor(hours)}:${Math.floor(minutes)} hs`
+}
 </script>
 
 <template>
@@ -36,11 +43,11 @@ function turnOff(aulaId) {
         v-for='(aula, index) in homeStore.aulas.filter(aula => aula.nombre.toLowerCase().match(searchText.toLowerCase()))'
         :key='index'>
         <td>{{ aula.nombre }}</td>
-        <td>{{ aula.from }}</td>
+        <td>{{ aula.estado ? getDateDiff(aula.from) : '' }}</td>
         <td>
-          <custom-button @click='aula.estado === 0 ? turnOn(aula.nombre) : turnOff(aula.nombre)'
-                         :theme='aula.estado === 0 ? "secondary" : "gray"'>
-            {{ aula.estado === 0 ? 'Encender' : 'Apagar' }}
+          <custom-button :onclick='() => homeStore.toggleAula(aula.id)'
+                         :theme='aula.estado ? "secondary" : "primary"'>
+            {{ aula.estado ? 'Apagar' : 'Encender' }}
           </custom-button>
         </td>
       </tr>

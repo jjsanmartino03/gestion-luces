@@ -10,19 +10,47 @@ export const useHomeStore = defineStore('home', {
     async getAulas() {
       this.loading = true
       try {
-        const response = await api.get('api/aulas/')
+        const response = await api.get('api/interacciones/')
         this.aulas = response.data.map(a => {
           return {
-            nombre: `Aula ${a.numero}`,
-            estado: a.id % 2 ? 0 : 1,
-            from: `Hace ${a.numero % 5}:00 hs.`
+            nombre: `Aula ${a.aula_numero}`,
+            estado: a.estado,
+            has_rele: a.has_rele,
+            from: a.desde,
+            id: a.aula_id
           }
         })
+
+        console.log(this.aulas)
       } catch (e) {
         alert('Error al obtener las aulas')
       } finally {
         this.loading = false
       }
+    },
+    async toggleAula(id) {
+      this.loading = true
+      try {
+        const response = await api.post(`api/interacciones/`, {
+          id_aula: id
+        })
+        this.aulas = this.aulas.map(a => {
+          if (a.id === id) {
+            return {
+              ...a,
+              estado: !a.estado
+            }
+          }
+          return a
+        })
+
+
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
+
     }
   }
 })
