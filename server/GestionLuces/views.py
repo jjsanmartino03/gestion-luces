@@ -78,7 +78,7 @@ class RegistroDatosArduino(viewsets.ViewSet):
         ultimo_registro = RegistrosLuces.objects.filter(sensor__aula__ip=ip,
                                                         hasta=None).first()  # obtiene el ultimo registro del sensor con la ip del sensor
 
-        if int(ultimo_registro.estado) != estado:  # si el estado no es el mismo
+        if int(ultimo_registro.estado) != int(estado):  # si el estado no es el mismo
             nuevo_registro = RegistrosLuces.objects.create(  # se crea un nuevo campo con el nuevo estado
                 sensor=ultimo_registro.sensor,
                 desde=datetime.datetime.now(),
@@ -135,13 +135,13 @@ class InteraccionesView(viewsets.ViewSet):
                 sensor=sensor_rele
             )
 
-            # response = get(f'http://{aula.ip}/hola')
-            # print(response.status_code)
-            # if response.status_code != 200:
-            #     raise Exception('Error al llamar a la API del arduino.', [
-            #         response.status_code,
-            #         response.text
-            #     ])}
+            response = get(f'http://{aula.ip}/hola')
+            print(response.status_code)
+            if response.status_code != 200:
+                raise Exception('Error al llamar a la API del arduino.', [
+                    response.status_code,
+                    response.text
+                ])
 
             arduino_status = (0 if estado else 1)    #int(response.text)
 

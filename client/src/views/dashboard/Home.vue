@@ -24,7 +24,10 @@ const getDateDiff = (date) => {
   const minutes = ((new Date() - new Date(date)) / 1000 / 60) % 60
   const hours = ((new Date() - new Date(date)) / 1000 / 60 / 60) % 24
 
-  return `Hace ${Math.floor(hours)}:${Math.floor(minutes)} hs`
+  const formattedMinutes = minutes < 10 ? `0${Math.floor(minutes)}` : Math.floor(minutes)
+  const formattedHours = hours < 10 ? `0${Math.floor(hours)}` : Math.floor(hours)
+
+  return `Hace ${formattedHours}:${formattedMinutes} hs`
 }
 </script>
 
@@ -76,7 +79,7 @@ const getDateDiff = (date) => {
 }
 
 .aulas-table td {
-  width: 33%;
+  width: auto;
   padding: .5rem 1rem;
   border-top: 2px solid #828589;
 }

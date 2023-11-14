@@ -56,6 +56,10 @@ export default {
   padding: 0;
 }
 
+.button:disabled{
+  cursor: not-allowed;
+}
+
 .solid {
   border-radius: .5rem;
   padding: .5rem 1rem;
