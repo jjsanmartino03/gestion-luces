@@ -1,13 +1,32 @@
+#include <WiFi.h>
 const int sensorPin = A0; // Pin analógico al que está conectado el sensor fotosensible
 const int relePin = 13; // Pin digital al que está conectado el relé
 int lastSensorValue = 0; // Variable para almacenar la última lectura del sensor
 int releState = LOW; // Variable para almacenar el estado actual del relé (inicializado como apagado)
 
+const char* ssid = "wifi_guido";     // Cambia esto con el nombre de tu red Wi-Fi
+const char* password = "9dejuliorafaela"; // Cambia esto con tu contraseña de red Wi-Fi
+
+
 void setup() {
   pinMode(sensorPin, INPUT); // Configura el pin del sensor como entrada
   pinMode(relePin, OUTPUT); // Configura el pin del relé como salida
   Serial.begin(9600); // Inicializa la comunicación serial a 9600 baudios
+  Serial.begin(115200);
+  delay(1000);
+
+  // Conéctate a la red Wi-Fi
+  Serial.println("Conectándose a la red Wi-Fi...");
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Intentando conectar a la red Wi-Fi...");
+  }
+
+  Serial.println("Conexión exitosa a la red Wi-Fi");
 }
+
 
 void loop() {
   // Realiza una lectura del sensor cada 3 segundos
