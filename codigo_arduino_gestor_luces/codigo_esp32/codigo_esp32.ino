@@ -1,10 +1,11 @@
 #include <WiFi.h>
 #include <WebServer.h>
+#include <HTTPClient.h>
 
-const char* ssid = "wifi_guido";
-const char* password = "9dejuliorafaela";
+const char* ssid = "Fibertel WiFi220 2.4GHz";
+const char* password = "01423429989";
 
-const char* serverName = "http://192.168.174.7:8000/";
+const char* serverName = "http://192.168.0.66:8000/api/registro_sensores/";
 
 
 int lastSensorValue = 0;
@@ -49,15 +50,17 @@ void setupServerRoutes() {
 }
 
 void handleHolaRequest() {
-  toggleRelayState();
-  server.send(200, "text/plain", "Solicitud recibida");
+  char* request= toggleRelayState();
+  server.send(200, "text/plain", request);
 }
 
-void toggleRelayState() {
+char* toggleRelayState() {
   releState = (releState == LOW) ? HIGH : LOW;
   digitalWrite(RELE_PIN, releState);
+  char* changeState = readSensorRightNow();
   Serial.print("Estado del relé: ");
   Serial.println(releState == HIGH ? "Encendido" : "Apagado");
+  return changeState;
 }
 
 void loop() {
@@ -72,18 +75,51 @@ void loop() {
 void readSensorValue() {
   static unsigned long previousMillis = 0;
   unsigned long currentMillis = millis();
-  
-  if (currentMillis - previousMillis >= 3000) {
+
+  if (currentMillis - previousMillis >= 10000) {
     previousMillis = currentMillis;
     int sensorValue = analogRead(SENSOR_PIN);
 
     Serial.println(sensorValue);
 
+    // valor máximo 4096 (apagado)
+    // valor mínimo 0 (prendido)
+    int digitalSensorValue = (sensorValue > 1800) ? 0 : 1;
+    WiFiClient client;
+    HTTPClient http;
+
+    http.begin(client, serverName);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    String httpRequestData = "estado=";
+    httpRequestData += digitalSensorValue;
+    // Send HTTP POST request
+    int httpResponseCode = http.POST(httpRequestData);
+
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+
+    // Free resources
+    http.end();
+
     if (sensorValue != lastSensorValue) {
       lastSensorValue = sensorValue;
       Serial.print("Lectura del sensor: ");
       Serial.println(sensorValue);
+      Serial.println("Lectura digital: ");
+      Serial.println(digitalSensorValue);
+
     }
+  }
+}
+
+
+char* readSensorRightNow(){
+  int sensorValue = analogRead(SENSOR_PIN);
+  if (sensorValue>1800){
+    return "0";
+  }
+  else {
+    return "1";
   }
 }
 
