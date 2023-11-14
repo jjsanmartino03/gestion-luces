@@ -1,5 +1,5 @@
 <template>
-  <button :class='computedClass' @click='handleClick'>
+  <button :disabled='disabled' :class='computedClass' @click='handleClick'>
     <slot></slot>
   </button>
 </template>
@@ -8,18 +8,27 @@
 export default {
   name: 'CustomButton',
   props: {
+    class: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     theme: {
       type: String,
-      default: 'light' // possible values: 'light', 'dark'
+      default: 'primary' // possible values: 'primary', 'secondary'
     },
     variant: {
       type: String,
-      default: 'primary' // possible values: 'primary', 'secondary'
+      default: 'solid' // possible values: 'solid', 'link'
     }
   },
   computed: {
     computedClass() {
-      return [this.theme, this.variant]
+      return [this.theme, this.variant, 'button', this.disabled ? 'disabled' : '',
+        this.class]
     }
   },
   methods: {
@@ -32,40 +41,35 @@ export default {
 
 <style scoped>
 /* Light theme */
-button {
+.button {
   cursor: pointer;
+  outline: none;
+  border: none;
+  font-size: 1rem;
+  padding: 0;
 }
 
-.light.primary {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+.solid {
+  border-radius: .5rem;
+  padding: .5rem 1rem;
 }
 
-.light.secondary {
-  background-color: #6C757D;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+.solid:hover, .solid:active {
+  opacity: 0.7;
 }
 
-/* Dark theme */
-.dark.primary {
-  background-color: #001F3F;
+.primary.solid {
+  background-color: #386aa4;
   color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
 }
 
-.dark.secondary {
-  background-color: #343A40;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+.primary.link {
+  background-color: transparent;
+  color: #386aa4;
+}
+
+.primary.link:hover,.primary.link:active{
+  text-decoration: underline;
+  text-underline: #386aa4;
 }
 </style>
