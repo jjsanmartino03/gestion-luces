@@ -136,7 +136,6 @@ class InteraccionesView(viewsets.ViewSet):
             )
 
             response = get(f'http://{aula.ip}/hola')
-            print(response.status_code)
             if response.status_code != 200:
                 raise Exception('Error al llamar a la API del arduino.', [
                     response.status_code,
