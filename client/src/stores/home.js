@@ -44,7 +44,7 @@ export const useHomeStore = defineStore('home', {
 
 
       } catch (e) {
-        console.log(e)
+        alert("Error al cambiar el estado de un aula")
       } finally {
         this.loading = false
       }

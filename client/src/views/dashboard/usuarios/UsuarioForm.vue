@@ -14,9 +14,6 @@ const props = defineProps({
   }
 })
 
-console.log(props.user)
-
-
 const inputs = ref(props.user || {
   username: '',
   password: '',
