@@ -97,8 +97,8 @@ class RegistroDatosArduino (viewsets.ViewSet):
         return Response({})
     
 class EstadisticasSemanales (viewsets.ViewSet):
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def calcular_consumo_diario(self, fecha):
         tiempo_total = timedelta()
