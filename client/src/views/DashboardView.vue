@@ -123,6 +123,11 @@ const title = computed(() => {
   width: 100%;
 }
 
+main{
+  height: 100%;
+  background-color: #eaeaea;
+}
+
 header {
   display: flex;
   width: 100%;
@@ -134,7 +139,6 @@ header {
 
 nav {
   font-size: 12px;
-  margin-top: 2rem;
   background-color: #386aa4;
   padding: .5rem 1rem;
   display: flex;
