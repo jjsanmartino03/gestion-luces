@@ -19,7 +19,7 @@ main {
   max-width: 768px;
   width: 100%;
   background-color: #eaeaea;
-  height: 100vh;
+  height: 100svh;
   justify-content: center;
   align-items: center;
   padding: 1rem;

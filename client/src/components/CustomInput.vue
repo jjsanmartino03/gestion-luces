@@ -21,11 +21,11 @@ export default {
       default: false
     },
     label: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     modelValue: {
-      type: String,
+      type: [String,Number],
       default: ''
     },
     inputId: {

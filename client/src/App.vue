@@ -21,7 +21,7 @@ header {
   width: 100%;
   justify-content: space-between;
   line-height: 1.5;
-  max-height: 100vh;
+  max-height: 100svh;
   border-bottom: black 1px solid;
 }
 

@@ -1,20 +1,21 @@
 <template>
-  <div class='wrapper'>
+  <div class='wrapper' @touchstart='handleWrapperTouchStart'
+       @touchend='handleWrapperTouchEnd'>
     <header>
       <h1>{{ title }}</h1>
     </header>
-    <main>
+    <main v-if='authStore.isAuthenticated'>
       <RouterView />
     </main>
     <nav>
       <RouterLink to='/dashboard/stats' class='nav-link'>
-        <img class='nav-logo' alt='Logo de un foco' src='/graphic_icon.png' />
+        <img class='nav-logo' alt='Logo gráfico estadístico' src='/graphic_icon.png' />
       </RouterLink>
       <RouterLink to='/dashboard' class='nav-link'>
         <img class='nav-logo' alt='Logo de un foco' src='/lightbulb_icon.png' />
       </RouterLink>
       <button class='nav-link' @click='toggleMenu'>
-        <img class='nav-logo' alt='Logo de un foco' src='/menu_icon.png' />
+        <img class='nav-logo' alt='Logo de menu' src='/menu_icon.png' />
       </button>
 
     </nav>
@@ -25,11 +26,11 @@
            @touchend='handleTouchEnd'>
         <hr />
         <ul>
-          <li>
+          <li v-if='isAdmin'>
             <RouterLink to='/dashboard/usuarios'>Usuarios</RouterLink>
           </li>
-          <li>
-            <RouterLink to='/dashboard/aulas'>Crear aula</RouterLink>
+          <li v-if='isAdmin'>
+            <RouterLink to='/dashboard/aulas'>Aulas</RouterLink>
           </li>
           <li>
             <CustomButton class='logout-button' variant='link' @click='logout'>Cerrar sesión</CustomButton>
@@ -45,7 +46,7 @@
 <script setup>
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import CustomButton from '../components/CustomButton.vue'
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
@@ -54,16 +55,26 @@ const router = useRouter()
 
 if (!authStore.isAuthenticated) {
   router.push('/login')
-
 }
+
+onMounted(() => {
+  if (authStore.isAuthenticated) authStore.getCurrentUser()
+})
+
 const showMenu = ref(false)
 const startY = ref(0)
+const startWrapperX = ref(0)
+const currentWrapperX = ref(0)
 const currentY = ref(0)
 
 const menu = ref(null)
 
 function toggleMenu() {
   showMenu.value = !showMenu.value
+}
+
+function handleWrapperTouchStart(event) {
+  startWrapperX.value = event.touches[0].clientX
 }
 
 function handleTouchStart(event) {
@@ -87,6 +98,7 @@ function handleTouchEnd() {
     if (menu.value) menu.value.style.transform = `translateY(0)`
   }
 }
+
 
 function logout() {
   authStore.logout()
@@ -112,6 +124,40 @@ const title = computed(() => {
   }
 })
 
+function handleWrapperTouchEnd(event) {
+  const allRoutes = {
+    'stats': {
+      left: null,
+      right: 'home'
+    },
+    'home': {
+      left: 'stats',
+      right: 'usuarios'
+    },
+    'usuarios': {
+      left: 'home',
+      right: 'aulas'
+    },
+    'aulas': {
+      left: 'usuarios',
+      right: null
+    }
+  }
+
+  if (event.changedTouches[0].clientX - startWrapperX.value > 100) {
+    if (allRoutes[route.name].left) {
+      router.push({ name: allRoutes[route.name].left })
+    }
+  } else if (event.changedTouches[0].clientX - startWrapperX.value < -100) {
+    //swipe right
+    if (allRoutes[route.name].right) {
+      router.push({ name: allRoutes[route.name].right })
+    }
+  }
+}
+
+const isAdmin = computed(() => authStore?.user?.is_staff)
+
 </script>
 
 <style scoped>
@@ -119,13 +165,13 @@ const title = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
+  height: 100svh;
   padding-bottom: 70px;
   padding-top: 65px;
   width: 100%;
 }
 
-main{
+main {
   height: 100%;
   overflow-y: scroll;
   background-color: #eaeaea;
@@ -133,7 +179,7 @@ main{
 
 header {
   position: fixed;
-  top:0;
+  top: 0;
   max-width: 768px;
 
   height: 65px;
@@ -184,7 +230,7 @@ nav button {
 .menu-overlay {
   z-index: 1;
   background-color: rgba(0, 0, 0, 0.66);
-  height: 100vh;
+  height: 100svh;
   position: fixed;
 
   bottom: 0;
@@ -233,7 +279,7 @@ nav button {
   color: inherit;
 }
 
-.logout-button{
+.logout-button {
   font-size: 1.5rem;
 }
 </style>
