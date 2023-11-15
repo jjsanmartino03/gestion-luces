@@ -34,7 +34,21 @@ export default defineConfig({
           sizes: '144x144',
           type: 'image/png',
           purpose: 'any maskable'
-        }]
+        }],
+      screenshots: [
+        {
+          src: 'screenshots/home.png',
+          sizes: '445x695'
+        },
+        {
+          src: 'screenshots/stats.png',
+          sizes: '445x695'
+        },
+        {
+          src: 'screenshots/aulas.png',
+          sizes: '445x695'
+        }
+      ]
     }
   })], resolve: {
     alias: {
