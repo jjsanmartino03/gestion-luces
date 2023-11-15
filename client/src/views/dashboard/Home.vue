@@ -1,8 +1,8 @@
 <script setup>
 import CustomButton from '../../components/CustomButton.vue'
-import Input from '../../components/CustomInput.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useHomeStore } from '../../stores/home'
+import CustomInput from '../../components/CustomInput.vue'
 
 const searchText = ref('')
 const homeStore = useHomeStore()
@@ -34,7 +34,7 @@ const getDateDiff = (date) => {
 <template>
   <div class='home-container'>
     <div class='search-container'>
-      <Input placeholder='Buscar' input-id='search' v-model='searchText' />
+      <custom-input placeholder='Buscar' input-id='search' v-model='searchText' />
     </div>
 
     <div v-if='homeStore.loading'>

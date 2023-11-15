@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0'
   },
-  mode: 'production', base: '/', plugins: [vue(), vueJsx(), VitePWA({
+  mode: 'development', base: '/', plugins: [vue(), vueJsx(), VitePWA({
     registerType: 'autoUpdate', devOptions: {
       enabled: true
     }, manifest: {
@@ -28,7 +28,13 @@ export default defineConfig({
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable'
-      }]
+      },
+        {
+          src: 'maskable_icon.png',
+          sizes: '144x144',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }]
     }
   })], resolve: {
     alias: {

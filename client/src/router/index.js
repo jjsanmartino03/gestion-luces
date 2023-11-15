@@ -27,19 +27,29 @@ const options = {
           component: () => import('@/views/dashboard/Home.vue')
         },
         {
-          path: '/stats', // Default child route.
+          path: '/dashboard/stats', // Default child route.
           name: 'stats',
           component: () => import('@/views/dashboard/Stats.vue')
         },
         {
-          path: '/aulas', // Default child route.
+          path: '/dashboard/aulas', // Default child route.
           name: 'aulas',
           component: () => import('@/views/dashboard/Aulas.vue')
         },
         {
-          path: '/usuarios', // Default child route.
+          path: '/dashboard/usuarios', // Default child route.
           name: 'usuarios',
-          component: () => import('@/views/dashboard/Usuarios.vue')
+          component: () => import('@/views/dashboard/usuarios/Usuarios.vue')
+        },
+        {
+          path: '/dashboard/usuarios/crear', // Default child route.
+          name: 'nuevo-usuario',
+          component: () => import('@/views/dashboard/usuarios/NuevoUsuario.vue')
+        },
+        {
+          path: '/dashboard/usuarios/:id', // Default child route.
+          name: 'editar-usuario',
+          component: () => import('@/views/dashboard/usuarios/EditarUsuario.vue')
         }
       ]
 

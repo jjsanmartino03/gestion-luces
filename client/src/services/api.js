@@ -16,6 +16,14 @@ class ApiClient {
     return await this.request('post', url, data)
   }
 
+  async put(url, data) {
+    return await this.request('put', url, data)
+  }
+
+  async patch(url, data) {
+    return await this.request('patch', url, data)
+  }
+
   async request(method, url, data) {
     let headers = {}
     const token = localStorage.getItem('token')

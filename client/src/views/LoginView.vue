@@ -1,9 +1,9 @@
 <script setup>
-import Input from '../components/CustomInput.vue'
 import CustomButton from '../components/CustomButton.vue'
 import { useAuthStore } from '../stores/auth'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import CustomInput from '../components/CustomInput.vue'
 
 const authStore = useAuthStore()
 
@@ -32,9 +32,9 @@ async function login(e) {
       <form @submit='login'>
         <h1>Ingresar</h1>
         <div class='inputs-container'>
-          <Input required input-id='username' label='Nombre de Usuario' v-model='username'
+          <custom-input required input-id='username' label='Nombre de Usuario' v-model='username'
                  placeholder='Ingresa tu nombre de usuario' />
-          <Input required placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
+          <custom-input required placeholder='Ingresa tu contraseña' input-id='password' label='Contraseña' v-model='password'
                  type='password' />
         </div>
         <CustomButton type='submit' theme='primary' variant='solid'>

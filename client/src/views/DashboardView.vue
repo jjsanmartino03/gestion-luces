@@ -7,7 +7,7 @@
       <RouterView />
     </main>
     <nav>
-      <RouterLink to='/stats' class='nav-link'>
+      <RouterLink to='/dashboard/stats' class='nav-link'>
         <img class='nav-logo' alt='Logo de un foco' src='/graphic_icon.png' />
       </RouterLink>
       <RouterLink to='/dashboard' class='nav-link'>
@@ -26,10 +26,10 @@
         <hr />
         <ul>
           <li>
-            <RouterLink to='/usuarios'>Usuarios</RouterLink>
+            <RouterLink to='/dashboard/usuarios'>Usuarios</RouterLink>
           </li>
           <li>
-            <RouterLink to='/aulas'>Crear aula</RouterLink>
+            <RouterLink to='/dashboard/aulas'>Crear aula</RouterLink>
           </li>
           <li>
             <CustomButton class='logout-button' variant='link' @click='logout'>Cerrar sesión</CustomButton>
@@ -76,9 +76,7 @@ function handleTouchMove(event) {
   if (diffY > 0) { // Swipe Down
     if (menu.value) {
       menu.value.style.transform = `translateY(${diffY}px)`
-      console.log(diffY)
     }
-    console.log(diffY)
   }
 }
 
@@ -104,6 +102,8 @@ const title = computed(() => {
     case 'home':
       return 'Gestión de Luces'
     case 'usuarios':
+    case 'editar-usuario':
+    case 'nuevo-usuario':
       return 'Usuarios'
     case 'aulas':
       return 'Aulas'
@@ -120,15 +120,23 @@ const title = computed(() => {
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
+  padding-bottom: 70px;
+  padding-top: 65px;
   width: 100%;
 }
 
 main{
   height: 100%;
+  overflow-y: scroll;
   background-color: #eaeaea;
 }
 
 header {
+  position: fixed;
+  top:0;
+  max-width: 768px;
+
+  height: 65px;
   display: flex;
   width: 100%;
   justify-content: center;
@@ -138,6 +146,10 @@ header {
 }
 
 nav {
+  height: 70px;
+  max-width: 768px;
+  position: fixed;
+  bottom: 0;
   font-size: 12px;
   background-color: #386aa4;
   padding: .5rem 1rem;

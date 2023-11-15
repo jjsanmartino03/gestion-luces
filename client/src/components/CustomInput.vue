@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: 'Input',
+  name: 'CustomInput',
   props: {
     required: {
       type: Boolean,
