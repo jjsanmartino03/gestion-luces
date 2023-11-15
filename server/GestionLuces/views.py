@@ -118,7 +118,11 @@ class EstadisticasSemanales (viewsets.ViewSet):
             desde = datetime.fromtimestamp(registro.desde.timestamp())
 
             tiempo_total += hasta - desde
-        return tiempo_total
+
+        cantidad_aulas = Aulas.objects.count()
+        promedio = tiempo_total/cantidad_aulas
+        
+        return promedio
 
 
     def list(self, request):
