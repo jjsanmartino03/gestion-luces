@@ -67,6 +67,7 @@ class RegistroDatosArduino(viewsets.ViewSet):
 
     def create(self, request):
         ip = request.META.get('REMOTE_ADDR')  # obtiene la ip del cliente cuando llama a la ruta
+
         estado = request.data.get('estado')
 
         last_signal = Aulas.objects.filter(ip = ip).first() #obtiene el aula con su ultima señal
@@ -75,7 +76,15 @@ class RegistroDatosArduino(viewsets.ViewSet):
 
         ultimo_registro = RegistrosLuces.objects.filter(sensor__aula__ip=ip).last() #obtiene el ultimo registro del sensor con la ip del sensor
 
-        if int(ultimo_registro.estado) != int(estado): #si el estado no es el mismo
+        if not ultimo_registro:
+            sensor = Sensores.objects.get(aula__ip=ip, tipo=Sensores.Tipo.FOTOSENSIBLE) #obtiene el sensor fotosensible con la ip del aula
+
+            nuevo_registro = RegistrosLuces.objects.create( #se crea un nuevo campo con el nuevo estado
+                sensor = sensor,
+                desde = datetime.now(),
+                estado = estado
+            )
+        elif int(ultimo_registro.estado) != int(estado): #si el estado no es el mismo
             nuevo_registro = RegistrosLuces.objects.create( #se crea un nuevo campo con el nuevo estado
                 sensor = ultimo_registro.sensor,
                 desde = datetime.now(),
@@ -91,8 +100,8 @@ class RegistroDatosArduino(viewsets.ViewSet):
                     desde = datetime.now(),
                     estado = estado
                 )
-            ultimo_registro.hasta = datetime(datetime.now().year, datetime.now().month, datetime.now().day - 1, 23, 59, 59)
-            ultimo_registro.save()
+                ultimo_registro.hasta = datetime(datetime.now().year, datetime.now().month, datetime.now().day - 1, 23, 59, 59)
+                ultimo_registro.save()
 
         return Response({})
 
@@ -172,7 +181,7 @@ class InteraccionesView(viewsets.ViewSet):
                 tipo = Interacciones.Tipo.APAGADO
             interaccion = Interacciones.objects.create(
                 usuario=request.user,
-                fecha=datetime.datetime.now(),
+                fecha=datetime.now(),
                 tipo=tipo,
                 sensor=sensor_rele
             )
@@ -184,23 +193,25 @@ class InteraccionesView(viewsets.ViewSet):
                     response.text
                 ])
 
-            arduino_status = (0 if estado else 1)    #int(response.text)
+            arduino_status = 1 if int(response.text) == 0 else 0 # ¿porqueeee?
+            # creo que porque la medición que hace el arduino se hace antes de que
+            # se llegue a prender el foco, luego del cambio del relé. HAY QUE REVISARLO
 
             # según lo que nos dice el arduino, actualizamos el estado de la luz
             if ultimoRegistro and arduino_status == 0 and ultimoRegistro.estado == 1:
                 nuevo_registro = RegistrosLuces.objects.create(
                     sensor=sensor_fotosensible,
-                    desde=datetime.datetime.now(),
+                    desde=datetime.now(),
                     estado=0
                 )
-                ultimoRegistro.hasta = datetime.datetime.now()
+                ultimoRegistro.hasta = datetime.now()
                 ultimoRegistro.save()
             elif ultimoRegistro and arduino_status == 1 and ultimoRegistro.estado == 0:
-                ultimoRegistro.hasta = datetime.datetime.now()
+                ultimoRegistro.hasta = datetime.now()
                 ultimoRegistro.save()
                 nuevo_registro = RegistrosLuces.objects.create(
                     sensor=sensor_fotosensible,
-                    desde=datetime.datetime.now(),
+                    desde=datetime.now(),
                     estado=1
                 )
 

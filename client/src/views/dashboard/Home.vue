@@ -13,7 +13,7 @@ onMounted(() => {
   homeStore.getAulas()
   interval = setInterval(() => {
     homeStore.getAulas()
-  }, 15000)
+  }, 10000)
 })
 
 onUnmounted(() => {
