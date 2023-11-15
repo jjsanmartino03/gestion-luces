@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0'
   },
-  mode: 'production', base: '/', plugins: [vue(), vueJsx(), VitePWA({
+  mode: 'development', base: '/', plugins: [vue(), vueJsx(), VitePWA({
     registerType: 'autoUpdate', devOptions: {
       enabled: true
     }, manifest: {
