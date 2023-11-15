@@ -107,7 +107,7 @@ class RegistroDatosArduino(viewsets.ViewSet):
 
 class EstadisticasSemanales (viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 
     def calcular_consumo_diario(self, fecha):
@@ -137,7 +137,7 @@ class EstadisticasSemanales (viewsets.ViewSet):
 
     def list(self, request):
         fecha_domingo = request.query_params.get('fecha_domingo')
-        fecha_domingo = datetime.strptime(fecha_domingo, '%Y-%m-%d').date()
+        fecha_domingo = datetime.strptime(fecha_domingo, '%d/%m/%Y').date()
         lista = []
         for i in range(7):
             nueva_fecha = fecha_domingo + timedelta(days=i)
