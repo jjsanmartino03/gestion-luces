@@ -38,7 +38,7 @@ async function handleSubmit(e) {
 <template>
   <form :onsubmit='handleSubmit'>
     <custom-input input-id='username' v-model='inputs.username' placeholder='Nombre de usuario' required />
-    <custom-input input-id='password' v-model='inputs.password' placeholder='Contraseña' required type='password' />
+    <custom-input v-if='!props.user' input-id='password' v-model='inputs.password' placeholder='Contraseña' required type='password' />
     <custom-input input-id='first_name' v-model='inputs.first_name' placeholder='Nombre' required />
     <custom-input input-id='last_name' v-model='inputs.last_name' placeholder='Apellido' required />
     <custom-input input-id='email' v-model='inputs.email' placeholder='Email' type='email' required />

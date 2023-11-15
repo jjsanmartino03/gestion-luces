@@ -28,7 +28,13 @@ export default defineConfig({
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable'
-      }]
+      },
+        {
+          src: 'maskable_icon.png',
+          sizes: '144x144',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }]
     }
   })], resolve: {
     alias: {

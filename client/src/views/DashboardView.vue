@@ -76,9 +76,7 @@ function handleTouchMove(event) {
   if (diffY > 0) { // Swipe Down
     if (menu.value) {
       menu.value.style.transform = `translateY(${diffY}px)`
-      console.log(diffY)
     }
-    console.log(diffY)
   }
 }
 
@@ -136,6 +134,7 @@ main{
 header {
   position: fixed;
   top:0;
+  max-width: 768px;
 
   height: 65px;
   display: flex;
@@ -148,6 +147,7 @@ header {
 
 nav {
   height: 70px;
+  max-width: 768px;
   position: fixed;
   bottom: 0;
   font-size: 12px;

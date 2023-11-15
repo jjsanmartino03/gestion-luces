@@ -20,8 +20,6 @@ export const useHomeStore = defineStore('home', {
             id: a.aula_id
           }
         })
-
-        console.log(this.aulas)
       } catch (e) {
         alert('Error al obtener las aulas')
       } finally {

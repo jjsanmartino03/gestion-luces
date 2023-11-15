@@ -35,5 +35,8 @@ async function handleSubmit(data) {
   justify-content: center;
   gap: 1rem;
   padding-top: 1rem;
+
+  padding-left: .5rem;
+  padding-right: .5rem;
 }
 </style>

@@ -27,7 +27,7 @@ async function handleSubmit(data) {
 
 <template>
   <div class='home-container'>
-    <h2>Crear usuario</h2>
+    <h2>Editar usuario</h2>
 
     <div v-if='usersStore.loading || !formData'>
       Cargando...
@@ -46,5 +46,7 @@ async function handleSubmit(data) {
   justify-content: center;
   gap: 1rem;
   padding-top: 1rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
 }
 </style>
