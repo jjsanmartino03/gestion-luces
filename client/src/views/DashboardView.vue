@@ -32,7 +32,7 @@
             <RouterLink to='/aulas'>Crear aula</RouterLink>
           </li>
           <li>
-            <RouterLink to='/login'>Cerrar sesión</RouterLink>
+            <CustomButton class='logout-button' variant='link' @click='logout'>Cerrar sesión</CustomButton>
           </li>
         </ul>
       </div>
@@ -42,71 +42,76 @@
 
 </template>
 
-<script>
-import  { RouterLink, RouterView, useRoute } from 'vue-router'
+<script setup>
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import CustomButton from '../components/CustomButton.vue'
-import { computed } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useAuthStore } from '../stores/auth'
 
-export default {
-  name: 'DashboardView',
-  components: {
-    CustomButton,
-    RouterLink,
-    RouterView
-  },
-  data() {
-    return {
-      showMenu: false,
-      startY: 0,  // Initial touch Y coordinate
-      currentY: 0 // Current touch Y coordinate
+const authStore = useAuthStore()
+
+const router = useRouter()
+
+if (!authStore.isAuthenticated) {
+  router.push('/login')
+
+}
+const showMenu = ref(false)
+const startY = ref(0)
+const currentY = ref(0)
+
+const menu = ref(null)
+
+function toggleMenu() {
+  showMenu.value = !showMenu.value
+}
+
+function handleTouchStart(event) {
+  startY.value = event.touches[0].clientY
+}
+
+function handleTouchMove(event) {
+  const touchY = event.touches[0].clientY
+  const diffY = touchY - startY.value
+  if (diffY > 0) { // Swipe Down
+    if (menu.value) {
+      menu.value.style.transform = `translateY(${diffY}px)`
+      console.log(diffY)
     }
-  },
-  methods: {
-    toggleMenu() {
-      this.showMenu = !this.showMenu
-    },
-    handleTouchStart(event) {
-      this.startY = event.touches[0].clientY
-    },
-    handleTouchMove(event) {
-      const touchY = event.touches[0].clientY
-      const diffY = touchY - this.startY
-
-      if (diffY > 0) { // Swipe Down
-        this.$refs.menu.style.transform = `translateY(${diffY}px)`
-      }
-    },
-    handleTouchEnd() {
-      if (this.startY - this.currentY > 50) { // Adjust this value as needed
-        this.showMenu = false
-      } else {
-        this.$refs.menu.style.transform = `translateY(0)`
-      }
-    }
-  },
-  setup() {
-    const route = useRoute()
-
-    const title = computed(() => {
-      switch (route.name) {
-        case 'stats':
-          return 'Estadísticas'
-        case 'home':
-          return 'Gestión de Luces'
-        case 'usuarios':
-          return 'Usuarios'
-        case 'aulas':
-          return 'Aulas'
-        default:
-          return 'Gestión de Luces'
-      }
-    })
-
-    return {
-      title
-    }
+    console.log(diffY)
   }
 }
+
+function handleTouchEnd() {
+  if (startY.value - currentY.value > 50) { // Adjust this value as needed
+    showMenu.value = false
+  } else {
+    if (menu.value) menu.value.style.transform = `translateY(0)`
+  }
+}
+
+function logout() {
+  authStore.logout()
+  router.push('/login')
+}
+
+const route = useRoute()
+
+const title = computed(() => {
+  switch (route.name) {
+    case 'stats':
+      return 'Estadísticas'
+    case 'home':
+      return 'Gestión de Luces'
+    case 'usuarios':
+      return 'Usuarios'
+    case 'aulas':
+      return 'Aulas'
+    default:
+      return 'Gestión de Luces'
+  }
+})
+
 </script>
 
 <style scoped>
@@ -116,6 +121,11 @@ export default {
   justify-content: space-between;
   height: 100vh;
   width: 100%;
+}
+
+main{
+  height: 100%;
+  background-color: #eaeaea;
 }
 
 header {
@@ -129,7 +139,6 @@ header {
 
 nav {
   font-size: 12px;
-  margin-top: 2rem;
   background-color: #386aa4;
   padding: .5rem 1rem;
   display: flex;
@@ -208,7 +217,11 @@ nav button {
 }
 
 
-.menu li a{
+.menu li a {
   color: inherit;
+}
+
+.logout-button{
+  font-size: 1.5rem;
 }
 </style>
