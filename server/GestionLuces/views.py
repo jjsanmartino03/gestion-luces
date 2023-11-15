@@ -70,45 +70,48 @@ class RegistroDatosArduino(viewsets.ViewSet):
 
         estado = request.data.get('estado')
 
-        last_signal = Aulas.objects.filter(ip = ip).first() #obtiene el aula con su ultima señal
-        last_signal.last_signal_date = datetime.now() #actualiza la ultima señal del aula
+        last_signal = Aulas.objects.filter(ip=ip).first()  # obtiene el aula con su ultima señal
+        last_signal.last_signal_date = datetime.now()  # actualiza la ultima señal del aula
         last_signal.save()
 
-        ultimo_registro = RegistrosLuces.objects.filter(sensor__aula__ip=ip).last() #obtiene el ultimo registro del sensor con la ip del sensor
+        ultimo_registro = RegistrosLuces.objects.filter(
+            sensor__aula__ip=ip).last()  # obtiene el ultimo registro del sensor con la ip del sensor
 
         if not ultimo_registro:
-            sensor = Sensores.objects.get(aula__ip=ip, tipo=Sensores.Tipo.FOTOSENSIBLE) #obtiene el sensor fotosensible con la ip del aula
+            sensor = Sensores.objects.get(aula__ip=ip,
+                                          tipo=Sensores.Tipo.FOTOSENSIBLE)  # obtiene el sensor fotosensible con la ip del aula
 
-            nuevo_registro = RegistrosLuces.objects.create( #se crea un nuevo campo con el nuevo estado
-                sensor = sensor,
-                desde = datetime.now(),
-                estado = estado
+            nuevo_registro = RegistrosLuces.objects.create(  # se crea un nuevo campo con el nuevo estado
+                sensor=sensor,
+                desde=datetime.now(),
+                estado=estado
             )
-        elif int(ultimo_registro.estado) != int(estado): #si el estado no es el mismo
-            nuevo_registro = RegistrosLuces.objects.create( #se crea un nuevo campo con el nuevo estado
-                sensor = ultimo_registro.sensor,
-                desde = datetime.now(),
-                estado = estado
+        elif int(ultimo_registro.estado) != int(estado):  # si el estado no es el mismo
+            nuevo_registro = RegistrosLuces.objects.create(  # se crea un nuevo campo con el nuevo estado
+                sensor=ultimo_registro.sensor,
+                desde=datetime.now(),
+                estado=estado
             )
 
-            ultimo_registro.hasta = datetime.now() #se actualiza la fecha hasta del estado anterior
+            ultimo_registro.hasta = datetime.now()  # se actualiza la fecha hasta del estado anterior
             ultimo_registro.save()
         else:
             if ultimo_registro.desde.date() < datetime.now().date():
                 nuevo_registro = RegistrosLuces.objects.create(
-                    sensor = ultimo_registro.sensor,
-                    desde = datetime.now(),
-                    estado = estado
+                    sensor=ultimo_registro.sensor,
+                    desde=datetime.now(),
+                    estado=estado
                 )
-                ultimo_registro.hasta = datetime(datetime.now().year, datetime.now().month, datetime.now().day - 1, 23, 59, 59)
+                ultimo_registro.hasta = datetime(datetime.now().year, datetime.now().month, datetime.now().day - 1, 23,
+                                                 59, 59)
                 ultimo_registro.save()
 
         return Response({})
 
-class EstadisticasSemanales (viewsets.ViewSet):
+
+class EstadisticasSemanales(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-
 
     def calcular_consumo_diario(self, fecha):
         tiempo_total = timedelta()
@@ -130,10 +133,9 @@ class EstadisticasSemanales (viewsets.ViewSet):
             tiempo_total += hasta - desde
 
         cantidad_aulas = Aulas.objects.count()
-        promedio = tiempo_total/cantidad_aulas
-        
-        return promedio
+        promedio = tiempo_total / cantidad_aulas
 
+        return promedio
 
     def list(self, request):
         fecha_domingo = request.query_params.get('fecha_domingo')
@@ -142,9 +144,10 @@ class EstadisticasSemanales (viewsets.ViewSet):
         for i in range(7):
             nueva_fecha = fecha_domingo + timedelta(days=i)
             registro_diario = self.calcular_consumo_diario(nueva_fecha)
-            lista.append(round(registro_diario.total_seconds()/3600, 4))
+            lista.append(round(registro_diario.total_seconds() / 3600, 4))
 
         return Response(lista)
+
 
 class GetAuthenticatedUser(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
@@ -197,7 +200,7 @@ class InteraccionesView(viewsets.ViewSet):
                     response.text
                 ])
 
-            arduino_status = 1 if int(response.text) == 0 else 0 # ¿porqueeee?
+            arduino_status = 1 if int(response.text) == 0 else 0  # ¿porqueeee?
             # creo que porque la medición que hace el arduino se hace antes de que
             # se llegue a prender el foco, luego del cambio del relé. HAY QUE REVISARLO
 
@@ -232,13 +235,18 @@ class InteraccionesView(viewsets.ViewSet):
         aulas = Aulas.objects.all()
         datos_aulas = []
         for aula in aulas:
-            rele = Sensores.objects.get(aula=aula.id, tipo=Sensores.Tipo.RELE)
-            sensor_fotosensible = Sensores.objects.get(aula=aula.id, tipo=Sensores.Tipo.FOTOSENSIBLE)
-            ultimo_registro = RegistrosLuces.objects.filter(sensor=sensor_fotosensible.id).last()
+            rele = Sensores.objects.filter(aula=aula.id, tipo=Sensores.Tipo.RELE).first()
+            sensor_fotosensible = Sensores.objects.filter(aula=aula.id, tipo=Sensores.Tipo.FOTOSENSIBLE).first()
+
+            ultimo_registro = None
+            if sensor_fotosensible:
+                ultimo_registro = RegistrosLuces.objects.filter(sensor=sensor_fotosensible.id).last()
+
             datos_aula = {
                 'aula_id': aula.id,
                 'aula_numero': aula.numero,
                 'has_rele': True if rele else False,
+                'has_fotosensible': True if sensor_fotosensible else False,
                 'estado': ultimo_registro.estado if ultimo_registro else False,
                 'desde': ultimo_registro.desde if ultimo_registro else False,
             }

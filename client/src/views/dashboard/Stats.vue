@@ -4,8 +4,11 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <div class='stats-container'>
-    <div class='chart-container' id='chart'>
+    <div v-if='series.length && series[0].data.length' class='chart-container' id='chart'>
       <apexchart ref='chart' type='bar' height='380' :options='chartOptions' :series='series'></apexchart>
+    </div>
+    <div v-else>
+      Cargando...
     </div>
   </div>
 </template>
@@ -34,7 +37,7 @@ export default {
     apexchart: VueApexCharts
   },
   data() {
-    const data = [8.5, 9.7, 7.5, 6, 5, 8, 2]
+    const data = []
 
     // Calcula el promedio de los valores en data
     const average = data.reduce((acc, val) => acc + val, 0) / data.length
@@ -47,7 +50,7 @@ export default {
       series: [
         {
           name: 'Horas de uso al día',
-          data: [10.5, 9.7, 7.5, 6, 5, 8, 2] // Actualiza los datos del gráfico con los promedios recibidos
+          data: [] // Actualiza los datos del gráfico con los promedios recibidos
         }
       ],
 

@@ -46,13 +46,16 @@ const getDateDiff = (date) => {
         v-for='(aula, index) in homeStore.aulas.filter(aula => aula.nombre.toLowerCase().match(searchText.toLowerCase()))'
         :key='index'>
         <td>{{ aula.nombre }}</td>
-        <td>{{ aula.estado ? getDateDiff(aula.from) : '' }}</td>
-        <td>
+        <td v-if='aula.has_fotosensible'>{{ aula.estado ? getDateDiff(aula.from) : '' }}</td>
+        <td v-if='aula.has_fotosensible && aula.has_rele'>
           <custom-button :onclick='() => homeStore.toggleAula(aula.id)'
                          :theme='aula.estado ? "secondary" : "primary"'>
             {{ aula.estado ? 'Apagar' : 'Encender' }}
           </custom-button>
         </td>
+        <td v-else-if='aula.has_fotosensible'> Falta relé</td>
+
+        <td colspan='2' v-if='!aula.has_fotosensible'>Falta relé y sensor</td>
       </tr>
       </tbody>
     </table>

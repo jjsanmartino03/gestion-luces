@@ -4,7 +4,8 @@ import api from '../services/api'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: null,
-    isAuthenticated: localStorage.getItem('token') !== null
+    isAuthenticated: localStorage.getItem('token') !== null,
+    user: null
   }),
 
   actions: {
@@ -26,6 +27,15 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       this.isAuthenticated = false
       localStorage.removeItem('token')
+    },
+    async getCurrentUser() {
+      try {
+        const response = await api.get('api/user/')
+        this.user = response.data
+      } catch (e) {
+        alert('Error al obtener el usuario')
+        return false
+      }
     }
   }
 })

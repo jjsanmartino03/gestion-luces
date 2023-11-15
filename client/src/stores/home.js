@@ -16,6 +16,7 @@ export const useHomeStore = defineStore('home', {
             nombre: `Aula ${a.aula_numero}`,
             estado: a.estado,
             has_rele: a.has_rele,
+            has_fotosensible: a.has_fotosensible,
             from: a.desde,
             id: a.aula_id
           }

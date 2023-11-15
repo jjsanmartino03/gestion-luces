@@ -24,6 +24,10 @@ class ApiClient {
     return await this.request('patch', url, data)
   }
 
+  async delete(url) {
+    return await this.request('delete', url)
+  }
+
   async request(method, url, data) {
     let headers = {}
     const token = localStorage.getItem('token')
